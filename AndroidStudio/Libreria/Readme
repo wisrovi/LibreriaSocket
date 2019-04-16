@@ -20,7 +20,7 @@
 
 
 
-# 3) Para inicializar la aplicación se debe Crear un nuevo Objeto de la libreria:
+# 3) Para inicializar la aplicación se debe Crear un nuevo Objeto Class:
 
 class configuraciones{
 	String ip = "192.168.1.2";	      //ip donde esta instalado el servidor
@@ -31,7 +31,8 @@ class configuraciones{
 
 
 
-# 4) Para iniciar el socket por primera vez se debe agregar la siguiente funcion una única vez en una activity (apodaremos a esa activity: startSocket) (generalmente después de aceptar los terminos y condiciones:
+# 4) Para iniciar el socket por primera vez se debe agregar la siguiente funcion una única vez en una activity 
+(apodaremos a esa activity: startSocket) (generalmente después de aceptar los terminos y condiciones):
 
      class Control extends ComunicationToService {
         public Control(Context context) {
@@ -60,19 +61,19 @@ class configuraciones{
         control.AlmacenarDatosConfiguracion(configurarSocketDto);
     }
 
-#5) En la misma activity que apodamos "startSocket", en el lugar que deseemos iniciar el socket colocamos:
+# 5) En la misma activity que apodamos "startSocket", en el lugar que deseemos iniciar el socket colocamos:
 	control = new Control(TerminosCondiciones.this);
         configurarServicio();
         control.StartService(false);
 
-# 4) Si en algún momento se desea consultar si hay algun dato recibido se puede invocar:
+# 6) Si en algún momento se desea consultar si hay algun dato recibido, primero se crean las mismas funciones del punto 4) 
+y en el constructor de la activity donde se desea leer la información se coloca:
 
-AnswerSocket answerSocket = socket.ReadDataReceived();
-if(answerSocket != null){
-	//si hay datos a procesar
+- en el constructor:
+	control = new Control(AdminActivity.this);
 	
+- En la funcion Control (del punto 4) que se coloca en la activity se pueden levantar los eventos que se requieran cuando se recibe la información.
 	
-	String proceso = answerSocket.getProcess();
 	//la libreria tiene algunos procesos definidos que son:
 	/*
 	DiccionarioProcesos.procesoSocketMatricula;
@@ -80,9 +81,7 @@ if(answerSocket != null){
 	DiccionarioProcesos.procesoSocketPush;	
 	*/
 	// se pueden crear nuevos procesos y filtrarlos para diferentes funcionalidades o identificar y hacer alguna accion adicional antes los procesos genericos
-	
-	
-	
+		
 	String error = answerSocket.getError();  //si hay algun error se reflejara en esta variable
 	//el sistema cuenta con algunos errores definidos en la libreria, estos son:
 	/*
@@ -93,52 +92,26 @@ if(answerSocket != null){
 	DiccionarioErrores.msgErrorPin;
 	*/
 	//se podria crear un switch para identificar el error y efectuar soluciones nate el mismo
-	
-	
-	
+		
 	//si no hay errores el sistema entrega resultados a diferentes peticiones al servidor, estos se pueden capturar de la siguiente manera:
-	String datosRecibidos = answerSocket.getCompressedData();
+	String datosRecibidos = datos;
 	//se recomienda que estos datos vengan comprimidos en formato Gson, por lo que se sugiere que se conviertan a un objeto propio de la aplicacion	
-	
-}else{
-	//no hay datos a procesar
-}
 
 
-
-# 5) si se desea mas adelante en las diferentes actividades o en algun panel de configuracion, se pueden cambiar los permisos de navegacion para que la app
+# 7) si se desea mas adelante en las diferentes actividades o en algun panel de configuracion, se pueden cambiar los permisos de navegacion para que la app
 //no use los datos moviles, o para permitir usarlos si estan deshabilitados, así:
 
-socket.ChangePermissionsUseMobileData(true); //habilitar permisos
-socket.ChangePermissionsUseMobileData(false);//deshabilitar permisos
+	control.UpdateConfigDataBase(false, true);
 
 
-
-# 6) la libreria tiene un modulo para generar notificaciones PUSH en el celular que usa de manera automatica, pero si se desea se puede usar para generar notificaciones propias y personalizadas mediante la funcion:
-
-//primero se configura la notificacion, así:
-PushDto pushDto = new PushDto();
-pushDto.setIdClaseIniciar("MainActivity");   //actividad que se desea abrir cuando se pulse en la notificacion PUSH
-pushDto.setIdImagen("Imagen1");      //imagen que se desea usar
-pushDto.setInfoNotificacion("1234"); //alguna descripcion de max 10 caracteres de la notificacion
-pushDto.setMensajeTicker("ticker");  //mensaje resumen de la notificacion que se visualiza durante un segundo en el top de la pantalla
-pushDto.setSonido("true");           //true o false, si queremos que la notificacion suene cuando se genere en el cel
-pushDto.setVibrar("true");           //true o false, si queremos que el cel vibre al generar la notificacion
-pushDto.setTextoNotificacion("contenido"); //mensaje de la notificacion para mostrar
-pushDto.setTituloNotificacion("titulo");  //titulo de la notificacion        
-        
-//luego de configurarla, se genera usando la libreria, así:
-socket.MakePushNotification(getApplicationContext(), pushDto);
-
-
-
-# 7) Enviar datos usando el canal creado por la libreria en el socket
+# 8) Enviar datos usando el canal creado por la libreria en el socket
 //se establece un proceso para procesar en el servidor y los datos a procesar, y se activa el envio, así:
 
-socket.SendData("Proceso", "datos");
+control.sendService("Prueba","{'mensaje': '1234'}", false);
+
+//los mensajes se pueden enviar al servidor, pero si se desea, y para un usuario con perfil de administrador, 
+//tambien se pueden enviar datos en modo broadcast para que el mensaje sea recibido por todos los dispositivos conectados en el socket.
 
 
-
-
-8) Cerrar o detener el servicio:
-socket.stop();
+# 9) Cerrar o detener el servicio:
+control.StopService();
