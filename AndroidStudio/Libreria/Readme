@@ -22,16 +22,48 @@
 
 # 3) Para inicializar la aplicación se debe Crear un nuevo Objeto de la libreria:
 
-
-String ip = "192.168.1.2";	      //ip donde esta instalado el servidor
-String titulo = "tituloProyecto"; // este titulo debe coincidir con el mismo titulo dado en la libreria del servidor
-String puertoSocket = "5000";     // puerto configurado en el servidor para la comunicación socket
-boolean permisosUsarDatos = true; // usar datos para la navegar en la aplicación
-
-Socket socket = new Socket(this, titulo, ip, puertoSocket, permisosUsarDatos);
-socket.start();
+class configuraciones{
+	String ip = "192.168.1.2";	      //ip donde esta instalado el servidor
+	String titulo = "tituloProyecto"; // este titulo debe coincidir con el mismo titulo dado en la libreria del servidor
+	String puertoSocket = "5000";     // puerto configurado en el servidor para la comunicación socket
+	boolean permisosUsarDatos = true; // usar datos para la navegar en la aplicación
+}
 
 
+
+# 4) Para iniciar el socket por primera vez se debe agregar la siguiente funcion una única vez en una activity (apodaremos a esa activity: startSocket) (generalmente después de aceptar los terminos y condiciones:
+
+     class Control extends ComunicationToService {
+        public Control(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void DatosRecibidos(ContentValues data) {
+            super.DatosRecibidos(data);
+            String proceso = (String) data.get("P");
+            String datos = (String) data.get("D");
+            String error = (String) data.get("E");
+        }
+    }
+    
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void configurarServicio(){
+        ConfigurarSocketDto configurarSocketDto = new ConfigurarSocketDto();
+        configurarSocketDto.setIpServer(configuraciones.ip);
+        configurarSocketDto.setPuerto(Integer.parseInt(configuraciones.puertoSocket));
+        configurarSocketDto.setUsarPushDefault(true);
+        configurarSocketDto.setTituloProyecto(configuraciones.titulo);
+        configurarSocketDto.setUsoDatos(configuraciones.permisosUsarDatos);
+        configurarSocketDto.setImagenGrande(R.drawable.senint2_icon); //aca se elije el icono a utilizar en los mensajes que se reciban (PUSH)
+
+        control.AlmacenarDatosConfiguracion(configurarSocketDto);
+    }
+
+#5) En la misma activity que apodamos "startSocket", en el lugar que deseemos iniciar el socket colocamos:
+	control = new Control(TerminosCondiciones.this);
+        configurarServicio();
+        control.StartService(false);
 
 # 4) Si en algún momento se desea consultar si hay algun dato recibido se puede invocar:
 
