@@ -1,7 +1,7 @@
 # 1) En el proyecto: 
 	- New Module
 	- Import JAR/AAR Package
-	- Se elije la libreria: Socket.AAR y Finish
+	- Se elije la libreria: servicenotication.AAR y Finish
 	- Luego dar click en File
 	- Project structure
 	- Modules / Dependencies
