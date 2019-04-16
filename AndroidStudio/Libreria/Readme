@@ -30,9 +30,7 @@ class configuraciones{
 }
 
 
-
-# 4) Para iniciar el socket por primera vez se debe agregar la siguiente funcion una única vez en una activity 
-(apodaremos a esa activity: startSocket) (generalmente después de aceptar los terminos y condiciones):
+# 4) Para todas las acitivdades donde se desee usar el socket se debe crear la siguiente clase:
 
      class Control extends ComunicationToService {
         public Control(Context context) {
@@ -47,7 +45,10 @@ class configuraciones{
             String error = (String) data.get("E");
         }
     }
-    
+
+# 5) Para iniciar el socket por primera vez se debe agregar la siguiente funcion una única vez en una activity 
+(apodaremos a esa activity: startSocket) (generalmente después de aceptar los terminos y condiciones):
+        
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void configurarServicio(){
         ConfigurarSocketDto configurarSocketDto = new ConfigurarSocketDto();
@@ -61,12 +62,12 @@ class configuraciones{
         control.AlmacenarDatosConfiguracion(configurarSocketDto);
     }
 
-# 5) En la misma activity que apodamos "startSocket", en el lugar que deseemos iniciar el socket colocamos:
+# 6) En la misma activity que apodamos "startSocket", en el lugar que deseemos iniciar el socket colocamos:
 	control = new Control(TerminosCondiciones.this);
         configurarServicio();
         control.StartService(false);
 
-# 6) Si en algún momento se desea consultar si hay algun dato recibido, primero se crean las mismas funciones del punto 4) 
+# 7) Si en algún momento se desea consultar si hay algun dato recibido, primero se crean las mismas funciones del punto 4) 
 y en el constructor de la activity donde se desea leer la información se coloca:
 
 - en el constructor:
@@ -98,13 +99,13 @@ y en el constructor de la activity donde se desea leer la información se coloca
 	//se recomienda que estos datos vengan comprimidos en formato Gson, por lo que se sugiere que se conviertan a un objeto propio de la aplicacion	
 
 
-# 7) si se desea mas adelante en las diferentes actividades o en algun panel de configuracion, se pueden cambiar los permisos de navegacion para que la app
+# 8) si se desea mas adelante en las diferentes actividades o en algun panel de configuracion, se pueden cambiar los permisos de navegacion para que la app
 //no use los datos moviles, o para permitir usarlos si estan deshabilitados, así:
 
 	control.UpdateConfigDataBase(false, true);
 
 
-# 8) Enviar datos usando el canal creado por la libreria en el socket
+# 9) Enviar datos usando el canal creado por la libreria en el socket
 //se establece un proceso para procesar en el servidor y los datos a procesar, y se activa el envio, así:
 
 control.sendService("Prueba","{'mensaje': '1234'}", false);
@@ -113,5 +114,5 @@ control.sendService("Prueba","{'mensaje': '1234'}", false);
 //tambien se pueden enviar datos en modo broadcast para que el mensaje sea recibido por todos los dispositivos conectados en el socket.
 
 
-# 9) Cerrar o detener el servicio:
+# 10) Cerrar o detener el servicio:
 control.StopService();
